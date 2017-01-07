@@ -13,7 +13,7 @@ called [Q learning](https://en.wikipedia.org/wiki/Q-learning).
 
 ##Dependencies
 
-None! Native Python
+Python 2.7
 
 ##Usage
 
