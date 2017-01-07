@@ -23,9 +23,9 @@ Run `python Learner.py` in terminal to see the the bot in action. It'll find the
 
 The challenge for this video is to 
 
--modify the the game world so that it's bigger 
--add more obstacles
--have the bot start in a different position
+* modify the the game world so that it's bigger 
+* add more obstacles
+* have the bot start in a different position
 
 **Bonus points if you modify the bot in some way that makes it more efficient**
 
