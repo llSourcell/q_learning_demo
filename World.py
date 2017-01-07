@@ -136,4 +136,3 @@ board.grid(row=0, column=0)
 
 def start_game():
     master.mainloop()
-Contact GitHub API Training Shop Blog About
