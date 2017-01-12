@@ -1,25 +1,79 @@
-__author__ = 'philippe'
+__author__ = 'vivek'
+
 from Tkinter import *
+import random
+
 master = Tk()
 
+# Aesthetics
 triangle_size = 0.1
+Width = 10 # pix    el width, made smaller to fit
+(x, y) = (50, 50) # board dimensions, scale up or down as necessary
+board = Canvas(master, width=x*Width, height=y*Width) # make the board
+
+# Difficulty
+difficulty = 2 # Higher this is, the harder the maze
+walls_number = int(x * difficulty) # How many walls to generate?
+
+# Rewards
 cell_score_min = -0.2
 cell_score_max = 0.2
-Width = 100
-(x, y) = (5, 5)
-actions = ["up", "down", "left", "right"]
-
-board = Canvas(master, width=x*Width, height=y*Width)
-player = (0, y-1)
-score = 1
-restart = False
 walk_reward = -0.04
 
-walls = [(1, 1), (1, 2), (2, 1), (2, 2)]
-specials = [(4, 1, "red", -1), (4, 0, "green", 1)]
+# Actions
+actions = ["up", "down", "left", "right"]
+
+# Initial conditions
+def random_start():
+    """Start anywhere!"""
+    return(random.randrange(2,y-2), random.randrange(2,y-2)) # starting point
+
+player = random_start()
+score = 1
+restart = False
+
+# Rewards
+cell_score_min = -0.2
+cell_score_max = 0.2
+walk_reward = -0.04
+
+# Actions
+actions = ["up", "down", "left", "right"]
+
+# Square Functions
+def create_walls(walls, x=x, y=y):
+    """Let's make some walls!"""
+    wall_list = [(random.randrange(4, x), random.randrange(4, y)) for i in range(0,walls)]
+
+    if (0,0) in wall_list: # remove origin
+        wall_list.remove((0,0))
+
+    return(wall_list)
+
+def create_reds(x=x, y=y):
+    """ Lets make every other sides completely wrong to help it out"""
+    wall_list = []
+
+    wall_list += [(x-1, i, "red", -1) for i in range(0,y)] # right
+    wall_list += [(0, i, "red", -1) for i in range(2,y)] # left
+    wall_list += [(i, 0, "red", -1) for i in range(2,x)] # top
+    wall_list += [(i, y-1, "red", -1) for i in range(0,x)] # bottom
+
+    return(wall_list)
+
+def create_greens():
+    """ Lets make a little green corner for mercy"""
+    greens = [(0, 0, "green", 1), (1, 0, "green", 1), (0, 1, "green", 1)]
+
+    return(greens)
+
+# Special Squares
+specials = [] + create_greens() + create_reds() # x, y, color, score
+walls = create_walls(walls_number) # How many random walls?
 cell_scores = {}
 
 
+# Board Design
 def create_triangle(i, j, action):
     if action == actions[0]:
         return board.create_polygon((i+0.5-triangle_size)*Width, (j+triangle_size)*Width,
@@ -60,6 +114,7 @@ def render_grid():
 render_grid()
 
 
+# Scoring
 def set_cell_score(state, action, val):
     global cell_score_min, cell_score_max
     triangle = cell_scores[state][action]
@@ -73,14 +128,18 @@ def set_cell_score(state, action, val):
     color = "#" + red + green + "00"
     board.itemconfigure(triangle, fill=color)
 
-
+# Moving
 def try_move(dx, dy):
     global player, x, y, score, walk_reward, me, restart
+
     if restart == True:
         restart_game()
+
     new_x = player[0] + dx
     new_y = player[1] + dy
+
     score += walk_reward
+
     if (new_x >= 0) and (new_x < x) and (new_y >= 0) and (new_y < y) and not ((new_x, new_y) in walls):
         board.coords(me, new_x*Width+Width*2/10, new_y*Width+Width*2/10, new_x*Width+Width*8/10, new_y*Width+Width*8/10)
         player = (new_x, new_y)
@@ -89,14 +148,14 @@ def try_move(dx, dy):
             score -= walk_reward
             score += w
             if score > 0:
-                print "Success! score: ", score
+                print "\nSuccess! | Score: ", score
             else:
-                print "Fail! score: ", score
+                print "\n Fail! | Score: ", score
             restart = True
             return
     #print "score: ", score
 
-
+# Moving
 def call_up(event):
     try_move(0, -1)
 
@@ -112,17 +171,19 @@ def call_left(event):
 def call_right(event):
     try_move(1, 0)
 
-
+# Restarting
 def restart_game():
     global player, score, me, restart
-    player = (0, y-1)
+    player = random_start()
     score = 1
     restart = False
     board.coords(me, player[0]*Width+Width*2/10, player[1]*Width+Width*2/10, player[0]*Width+Width*8/10, player[1]*Width+Width*8/10)
 
+
 def has_restarted():
     return restart
 
+# Binding
 master.bind("<Up>", call_up)
 master.bind("<Down>", call_down)
 master.bind("<Right>", call_right)
@@ -133,6 +194,6 @@ me = board.create_rectangle(player[0]*Width+Width*2/10, player[1]*Width+Width*2/
 
 board.grid(row=0, column=0)
 
-
+# Starting
 def start_game():
     master.mainloop()
