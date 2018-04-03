@@ -1,5 +1,5 @@
 __author__ = 'philippe'
-from Tkinter import *
+from tkinter import *
 master = Tk()
 
 triangle_size = 0.1
@@ -89,9 +89,9 @@ def try_move(dx, dy):
             score -= walk_reward
             score += w
             if score > 0:
-                print "Success! score: ", score
+                print("Success! score: ", score)
             else:
-                print "Fail! score: ", score
+                print("Fail! score: ", score)
             restart = True
             return
     #print "score: ", score
