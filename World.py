@@ -1,5 +1,9 @@
 __author__ = 'philippe'
-from tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    from Tkinter import *
+    
 master = Tk()
 
 triangle_size = 0.1
